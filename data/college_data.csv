@@ -1,0 +1,6 @@
+college,branch,city,category,cutoff_rank,seat_type,fees,year
+ABC College,CSE,Bangalore,OBC,7500,Govt,60000,2023
+ABC College,ISE,Bangalore,OBC,8500,Govt,60000,2023
+XYZ College,CSE,Bangalore,OBC,9000,Management,250000,2023
+PQR College,AI,Bangalore,OBC,11000,Govt,70000,2023
+LMN College,CSE,Mysore,OBC,12000,Govt,50000,2023
