@@ -2,14 +2,22 @@ import streamlit as st
 from rag_engine import load_data, build_vector_db, retrieve_colleges
 
 st.set_page_config(page_title="PragyanAI", layout="wide")
-
 st.title("🎓 PragyanAI – College Decision Intelligence")
 
-# Load data
-df = load_data()
-index, _ = build_vector_db(df)
+# ---------- CACHE DATA & VECTOR DB ----------
+@st.cache_data
+def get_data():
+    return load_data()
 
-# Student Profile
+@st.cache_resource
+def get_index(df):
+    return build_vector_db(df)
+
+# Load data and index (ONLY ONCE)
+df = get_data()
+index = get_index(df)
+
+# ---------- STUDENT PROFILE ----------
 st.sidebar.header("👤 Student Profile")
 
 rank = st.sidebar.number_input("CET Rank", min_value=1, max_value=200000)
@@ -18,14 +26,19 @@ branch = st.sidebar.selectbox("Dream Branch", ["CSE", "ISE", "AI"])
 city = st.sidebar.selectbox("City Preference", ["Bangalore", "Mysore"])
 seat = st.sidebar.selectbox("Seat Preference", ["Govt", "Management"])
 
-question = st.text_input("Ask your question",
+question = st.text_input(
+    "Ask your question",
     "Which colleges are suitable for my rank?"
 )
 
+# ---------- RECOMMENDATION ----------
 if st.button("🔍 Get Recommendation"):
     query = (
-        f"Colleges for CET rank {rank} category {category} "
-        f"branch {branch} city {city} seat {seat}"
+        f"Colleges for CET rank {rank} "
+        f"category {category} "
+        f"branch {branch} "
+        f"city {city} "
+        f"seat {seat}"
     )
 
     results = retrieve_colleges(query, df, index)
@@ -42,12 +55,13 @@ if st.button("🔍 Get Recommendation"):
         else:
             stretch.append(row)
 
-    def show(title, data, color):
-        st.markdown(f"### {color} {title}")
+    def show(title, data, emoji):
+        st.markdown(f"### {emoji} {title}")
         if data:
             for r in data:
                 st.success(
-                    f"{r['college']} | {r['branch']} | {r['seat_type']} | Fees ₹{r['fees']}"
+                    f"{r['college']} | {r['branch']} | "
+                    f"{r['seat_type']} | Fees ₹{r['fees']}"
                 )
         else:
             st.info("No colleges found")
