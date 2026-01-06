@@ -4,7 +4,7 @@ from rag_engine import load_data, build_vector_db, retrieve_colleges
 st.set_page_config(page_title="PragyanAI", layout="wide")
 st.title("🎓 PragyanAI – College Decision Intelligence")
 
-# ---------- CACHE DATA & VECTOR DB ----------
+# ---------- CACHE ----------
 @st.cache_data
 def get_data():
     return load_data()
@@ -13,11 +13,10 @@ def get_data():
 def get_index(df):
     return build_vector_db(df)
 
-# Load data and index (ONLY ONCE)
 df = get_data()
-index = get_index(df)
+index = get_index(df)   # ✅ FAISS index object
 
-# ---------- STUDENT PROFILE ----------
+# ---------- SIDEBAR ----------
 st.sidebar.header("👤 Student Profile")
 
 rank = st.sidebar.number_input("CET Rank", min_value=1, max_value=200000)
@@ -26,12 +25,12 @@ branch = st.sidebar.selectbox("Dream Branch", ["CSE", "ISE", "AI"])
 city = st.sidebar.selectbox("City Preference", ["Bangalore", "Mysore"])
 seat = st.sidebar.selectbox("Seat Preference", ["Govt", "Management"])
 
-question = st.text_input(
+st.text_input(
     "Ask your question",
     "Which colleges are suitable for my rank?"
 )
 
-# ---------- RECOMMENDATION ----------
+# ---------- ACTION ----------
 if st.button("🔍 Get Recommendation"):
     query = (
         f"Colleges for CET rank {rank} "
